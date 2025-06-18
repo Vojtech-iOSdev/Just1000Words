@@ -15,7 +15,7 @@ struct Just1000WordsApp: App {
     }
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            AppView()
         }
     }
 }

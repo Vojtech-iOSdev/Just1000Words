@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    @ObservedObject var authVM: AuthViewModel
     @StateObject private var viewModel = FlashcardViewModel()
     @State private var showingLanguageSheet = false
     @State private var availableLanguages = ["Spanish", "Russian"]
@@ -66,6 +67,10 @@ struct ContentView: View {
             }
             .font(.headline)
             .padding()
+            
+            Button("Logout") {
+                authVM.logout()
+            }
 
             Spacer()
         }
@@ -90,6 +95,6 @@ struct ContentView: View {
 }
 
 
-#Preview {
-    ContentView()
-}
+//#Preview {
+//    ContentView(authVM: <#T##AuthViewModel#>, viewModel: <#T##arg#>, showingLanguageSheet: <#T##arg#>, availableLanguages: <#T##arg#>)
+//}
