@@ -9,10 +9,17 @@
 
 import Foundation
 
+//struct Flashcard: Identifiable, Codable, Equatable {
+//    let id: UUID
+//    let word: String
+//    let translation: String
+//}
+
 struct Flashcard: Identifiable, Codable, Equatable {
-    let id: UUID
+    let id: String
     let word: String
     let translation: String
+    var isLearned: Bool = false
 }
 
 enum Language: String, CaseIterable, Identifiable, Codable {
@@ -40,4 +47,20 @@ struct UserFlashcard: Codable, Identifiable {
     var word: String
     var translation: String
     var isLearned: Bool
+}
+
+struct User {
+    let id: String
+    let name: String
+    let languages: [Language]
+
+    init?(id: String, data: [String: Any]) {
+        guard let name = data["name"] as? String,
+              let languageStrings = data["languages"] as? [String] else {
+            return nil
+        }
+        self.id = id
+        self.name = name
+        self.languages = languageStrings.compactMap { Language(rawValue: $0) }
+    }
 }

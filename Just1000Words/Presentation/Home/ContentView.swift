@@ -11,86 +11,107 @@ struct ContentView: View {
     @ObservedObject var authVM: AuthViewModel
     @StateObject private var viewModel = FlashcardViewModel()
     @State private var showingLanguageSheet = false
-    @State private var availableLanguages = ["Spanish", "Russian"]
-
+    @State private var availableLanguages: [Language] = Language.allCases
+    
     var body: some View {
         VStack(spacing: 16) {
-            Button("Add Language") {
-                showingLanguageSheet = true
-            }
-
-//            Picker("Language", selection: $viewModel.selectedLanguage) {
-//                ForEach(viewModel.availableUserLanguages, id: \.self) { lang in
-//                    Text(lang).tag(lang)
-//                }
-//            }
-//            .pickerStyle(SegmentedPickerStyle())
-
-            Picker("Language", selection: $viewModel.selectedLanguage) {
-                ForEach(Language.allCases) { language in
-                    Text(language.rawValue).tag(language)
+            if viewModel.selectedLanguages.isEmpty {
+                Button("Add Language") {
+                    showingLanguageSheet = true
                 }
-            }
-            .pickerStyle(SegmentedPickerStyle())
-            .padding()
-
-            if let word = viewModel.currentWord {
-                Text(word.word)
-                    .font(.largeTitle)
-                    .padding()
-            }
-
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 4), spacing: 12) {
-                ForEach(viewModel.options) { option in
-                    Button(action: {
-                        viewModel.select(option: option)
-                    }) {
-                        Text(option.translation)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(
-                                viewModel.selectedOption == option
-                                    ? (option == viewModel.currentWord ? Color.green : Color.red)
-                                    : Color.blue
-                            )
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
+                
+                Button("Logout") {
+                    authVM.logout()
+                }
+            } else {
+                Button("Add Language") {
+                    showingLanguageSheet = true
+                }
+                
+                Picker("Language", selection: $viewModel.selectedLanguage) {
+                    ForEach(viewModel.selectedLanguages, id: \.self) { language in
+                        Text(language.rawValue).tag(language)
                     }
-                    .disabled(viewModel.buttonsDisabled)
                 }
+                .pickerStyle(SegmentedPickerStyle())
+                .padding()
+                
+                //            Picker("Language", selection: $viewModel.selectedLanguage) {
+                //                ForEach(Language.allCases) { language in
+                //                    Text(language.rawValue).tag(language)
+                //                }
+                //            }
+                //            .pickerStyle(SegmentedPickerStyle())
+                //            .padding()
+                
+                if let currentCard = viewModel.currentCard {
+                    Text(currentCard.word)
+                        .font(.largeTitle)
+                        .padding()
+                }
+                
+                if viewModel.flashcards.isEmpty {
+                    Text("DECK COMPLETED")
+                        .font(.largeTitle)
+                        .padding()
+                } else {
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 4), spacing: 12) {
+                        ForEach(viewModel.answers) { answeredCard in
+                            Button(action: {
+                                viewModel.checkAnswer(answeredCard)
+                            }) {
+                                Text(answeredCard.translation)
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(
+                                        viewModel.selectedAnswer == answeredCard
+                                        ? (answeredCard.translation == viewModel.currentCard?.translation ? Color.green : Color.red)
+                                        : Color.blue
+                                    )
+                                    .foregroundColor(.white)
+                                    .cornerRadius(10)
+                            }
+                            .disabled(viewModel.buttonsDisabled)
+                        }
+                    }
+                    .padding()
+                }
+                
+                HStack(spacing: 20) {
+                    Text("✅ Correct: \(viewModel.correctCount)")
+                    Text("❌ Incorrect: \(viewModel.incorrectCount)")
+                }
+                .font(.headline)
+                .padding()
+                
+                Button("Logout") {
+                    authVM.logout()
+                }
+                
+                Spacer()
             }
-            .padding()
-
-            HStack(spacing: 20) {
-                Text("✅ Correct: \(viewModel.correctCount)")
-                Text("❌ Incorrect: \(viewModel.incorrectCount)")
-            }
-            .font(.headline)
-            .padding()
-            
-            Button("Logout") {
-                authVM.logout()
-            }
-
-            Spacer()
         }
-        .onChange(of: viewModel.selectedLanguage) {
+        .onAppear {
+            viewModel.getCurrentUser()
+        }
+        .onChange(of: viewModel.selectedLanguage) { language in
+            viewModel.loadDeck(for: language.rawValue)
             viewModel.correctCount = 0
             viewModel.incorrectCount = 0
         }
         .sheet(isPresented: $showingLanguageSheet) {
-                VStack {
-                    Text("Choose a Language").font(.headline)
-                    ForEach(availableLanguages, id: \.self) { language in
-                        Button(language) {
-//                            viewModel.addLanguageToUser(language)
-                            showingLanguageSheet = false
-                        }
-                        .padding()
+            VStack {
+                Text("Choose a Language").font(.headline)
+                ForEach(availableLanguages, id: \.self) { language in
+                    Button(language.rawValue) {
+                        viewModel.addLanguageToUser(language.rawValue)
+                        showingLanguageSheet = false
                     }
+                    .padding()
                 }
-                .padding()
             }
+            .padding()
+        }
     }
 }
 

@@ -7,35 +7,37 @@
 
 import Foundation
 
-protocol FlashcardRepositoryProtocol {
-    func loadDeck(for language: Language, completion: @escaping (Result<[Flashcard], Error>) -> Void)
-}
+//protocol FlashcardRepositoryProtocol {
+//    func loadDeck(for language: Language, completion: @escaping (Result<[Flashcard], Error>) -> Void)
+//}
 
-class MockFirebaseFlashcardRepository: FlashcardRepositoryProtocol {
+// protocol not used now but should be, will refactor clean architecture later
+//class MockFirebaseFlashcardRepository: FlashcardRepositoryProtocol {
+class MockFirebaseFlashcardRepository {
     private let mockData: [Language: [Flashcard]] = [
         .spanish: [
-            Flashcard(id: UUID(), word: "hola", translation: "hello"),
-            Flashcard(id: UUID(), word: "adios", translation: "goodbye"),
-            Flashcard(id: UUID(), word: "gracias", translation: "thank you"),
-            Flashcard(id: UUID(), word: "por favor", translation: "please"),
-            Flashcard(id: UUID(), word: "lo siento", translation: "sorry"),
-            Flashcard(id: UUID(), word: "salud", translation: "bless you"),
-            Flashcard(id: UUID(), word: "bien", translation: "well"),
-            Flashcard(id: UUID(), word: "mal", translation: "bad"),
-            Flashcard(id: UUID(), word: "amigo", translation: "friend"),
-            Flashcard(id: UUID(), word: "familia", translation: "family")
+            Flashcard(id: "spanish0", word: "hola", translation: "hello"),
+            Flashcard(id: "spanish1", word: "adios", translation: "goodbye"),
+            Flashcard(id: "spanish2", word: "gracias", translation: "thank you"),
+            Flashcard(id: "spanish3", word: "por favor", translation: "please"),
+            Flashcard(id: "spanish4", word: "lo siento", translation: "sorry"),
+            Flashcard(id: "spanish5", word: "salud", translation: "bless you"),
+            Flashcard(id: "spanish6", word: "bien", translation: "well"),
+            Flashcard(id: "spanish7", word: "mal", translation: "bad"),
+            Flashcard(id: "spanish8", word: "amigo", translation: "friend"),
+            Flashcard(id: "spanish9", word: "familia", translation: "family")
         ],
         .russian: [
-            Flashcard(id: UUID(), word: "привет", translation: "hello"),
-            Flashcard(id: UUID(), word: "пока", translation: "goodbye"),
-            Flashcard(id: UUID(), word: "спасибо", translation: "thank you"),
-            Flashcard(id: UUID(), word: "пожалуйста", translation: "please"),
-            Flashcard(id: UUID(), word: "извини", translation: "sorry"),
-            Flashcard(id: UUID(), word: "будь здоров", translation: "bless you"),
-            Flashcard(id: UUID(), word: "хорошо", translation: "well"),
-            Flashcard(id: UUID(), word: "плохо", translation: "bad"),
-            Flashcard(id: UUID(), word: "друг", translation: "friend"),
-            Flashcard(id: UUID(), word: "семья", translation: "family")
+            Flashcard(id: "russian0", word: "привет", translation: "hello"),
+            Flashcard(id: "russian1", word: "пока", translation: "goodbye"),
+            Flashcard(id: "russian2", word: "спасибо", translation: "thank you"),
+            Flashcard(id: "russian3", word: "пожалуйста", translation: "please"),
+            Flashcard(id: "russian4", word: "извини", translation: "sorry"),
+            Flashcard(id: "russian5", word: "будь здоров", translation: "bless you"),
+            Flashcard(id: "russian6", word: "хорошо", translation: "well"),
+            Flashcard(id: "russian7", word: "плохо", translation: "bad"),
+            Flashcard(id: "russian8", word: "друг", translation: "friend"),
+            Flashcard(id: "russian9", word: "семья", translation: "family")
         ],
 //        .french: [
 //            Flashcard(id: UUID(),word: "bonjour", translation: "hello"),
