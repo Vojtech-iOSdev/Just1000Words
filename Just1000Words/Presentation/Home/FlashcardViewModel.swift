@@ -19,6 +19,8 @@ class FlashcardViewModel: ObservableObject {
     @Published var answers: [Flashcard] = []
     @Published var selectedAnswer: Flashcard?
     @Published var buttonsDisabled: Bool = false
+    @Published var showingLanguageSheet = false
+    @Published var availableLanguages: [Language] = Language.allCases
     
     @Published var currentUser: User?
     @Published var selectedLanguages: [Language] = []
@@ -62,33 +64,19 @@ class FlashcardViewModel: ObservableObject {
         }
     }
 
-    func loadDeck(for language: String) {
+    func loadDeck(for language: String?) {
+        guard  let language = language else { return }
         guard let languageEnumed = Language(rawValue: language) else { return }
         selectedLanguage = languageEnumed
         flashcardRepository.fetchDeck(for: language) { [weak self] cards in
             DispatchQueue.main.async {
                 self?.flashcards = cards.filter { !$0.isLearned }
                 self?.showNextCard()
+                print("debug \(self?.flashcards)")
             }
         }
     }
-    
-//    func loadUserLanguages() {
-//        guard let uid = authService.currentUserId() else { return }
-//
-//        db.collection("users").document(uid).getDocument { snapshot, error in
-//            guard let data = snapshot?.data(),
-//                  let langs = data["languages"] as? [String] else { return }
-//
-//            DispatchQueue.main.async {
-//                self.availableUserLanguages = langs
-//                if self.selectedLanguage.isEmpty, let first = langs.first {
-//                    self.selectedLanguage = first
-//                }
-//            }
-//        }
-//    }
-    
+        
     func addLanguageToUser(_ language: String) {
         guard let uid = authService.currentUserId() else { return }
         guard let languageEnumed = Language(rawValue: language) else { return }

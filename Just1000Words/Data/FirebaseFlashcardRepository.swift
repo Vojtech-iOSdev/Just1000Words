@@ -12,7 +12,7 @@
 //    private let db = Firestore.firestore()
 //
 //    func loadDeck(for language: Language, completion: @escaping (Result<[Flashcard], Error>) -> Void) {
-//        db.collection("decks").document(language.rawValue.lowercased()).getDocument { snapshot, error in
+//        db.collection("decks").document(language.rawValue).getDocument { snapshot, error in
 //            if let error = error {
 //                completion(.failure(error))
 //                return
@@ -52,8 +52,8 @@ class FirebaseFlashcardRepository: ObservableObject {
     private let auth = Auth.auth()
 
     func fetchDeck(for language: String, completion: @escaping ([Flashcard]) -> Void) {
-        print("debug: \(language)")
-        let deckRef = db.collection("decks").document(language.lowercased())
+        print("debug: \(language.lowercased())")
+        let deckRef = db.collection("decks").document(language)
 
         deckRef.getDocument { snapshot, error in
             guard let data = snapshot?.data(),
@@ -100,7 +100,7 @@ class FirebaseFlashcardRepository: ObservableObject {
             completion(merged)
         }
     }
-
+    
     func markCardLearned(language: String, cardId: String, learned: Bool) {
         guard let uid = auth.currentUser?.uid else { return }
 
@@ -109,8 +109,10 @@ class FirebaseFlashcardRepository: ObservableObject {
             .collection("progress")
             .document(language)
 
-        progressRef.setData([
-            "learnedMap.\(cardId)": learned
-        ], merge: true)
+        let update: [String: Any] = [
+            "learnedMap": [cardId: learned]
+        ]
+
+        progressRef.setData(update, merge: true)
     }
 }

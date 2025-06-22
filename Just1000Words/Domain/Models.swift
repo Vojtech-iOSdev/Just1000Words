@@ -23,8 +23,8 @@ struct Flashcard: Identifiable, Codable, Equatable {
 }
 
 enum Language: String, CaseIterable, Identifiable, Codable {
-    case spanish = "Spanish"
-    case russian = "Russian"
+    case spanish = "spanish"
+    case russian = "russian"
 //    case french = "French"
 
     var id: String { rawValue }

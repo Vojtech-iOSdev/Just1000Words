@@ -13,7 +13,7 @@ struct AppView: View {
     var body: some View {
         Group {
             if authVM.isLoggedIn {
-                ContentView(authVM: authVM) // your existing main view
+                FlashcardView(authVM: authVM) // your existing main view
             } else {
                 AuthView(authVM: authVM)
             }

@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  FlashcardView.swift
 //  Just1000Words
 //
 //  Created by Vojtěch Kalivoda on 6/18/25.
@@ -7,42 +7,24 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct FlashcardView: View {
     @ObservedObject var authVM: AuthViewModel
     @StateObject private var viewModel = FlashcardViewModel()
-    @State private var showingLanguageSheet = false
-    @State private var availableLanguages: [Language] = Language.allCases
     
     var body: some View {
         VStack(spacing: 16) {
-            if viewModel.selectedLanguages.isEmpty {
-                Button("Add Language") {
-                    showingLanguageSheet = true
-                }
-                
-                Button("Logout") {
-                    authVM.logout()
-                }
-            } else {
-                Button("Add Language") {
-                    showingLanguageSheet = true
-                }
-                
+            CustomButton1(title: "Add Language", action: {
+                viewModel.showingLanguageSheet = true
+            })
+            
+            if !viewModel.selectedLanguages.isEmpty {
                 Picker("Language", selection: $viewModel.selectedLanguage) {
                     ForEach(viewModel.selectedLanguages, id: \.self) { language in
-                        Text(language.rawValue).tag(language)
+                        Text(language.rawValue.capitalized).tag(language)
                     }
                 }
                 .pickerStyle(SegmentedPickerStyle())
                 .padding()
-                
-                //            Picker("Language", selection: $viewModel.selectedLanguage) {
-                //                ForEach(Language.allCases) { language in
-                //                    Text(language.rawValue).tag(language)
-                //                }
-                //            }
-                //            .pickerStyle(SegmentedPickerStyle())
-                //            .padding()
                 
                 if let currentCard = viewModel.currentCard {
                     Text(currentCard.word)
@@ -83,31 +65,32 @@ struct ContentView: View {
                 }
                 .font(.headline)
                 .padding()
-                
-                Button("Logout") {
-                    authVM.logout()
-                }
-                
-                Spacer()
             }
+            
+            CustomButton1(title: "Logout", action: authVM.logout)
+            
+            Spacer()
         }
         .onAppear {
             viewModel.getCurrentUser()
+            viewModel.loadDeck(for: viewModel.selectedLanguage.rawValue)
         }
         .onChange(of: viewModel.selectedLanguage) { language in
             viewModel.loadDeck(for: language.rawValue)
             viewModel.correctCount = 0
             viewModel.incorrectCount = 0
         }
-        .sheet(isPresented: $showingLanguageSheet) {
+        .sheet(isPresented: $viewModel.showingLanguageSheet) {
             VStack {
                 Text("Choose a Language").font(.headline)
-                ForEach(availableLanguages, id: \.self) { language in
-                    Button(language.rawValue) {
+                ForEach(viewModel.availableLanguages, id: \.self) { language in
+                    Button(language.rawValue.capitalized) {
                         viewModel.addLanguageToUser(language.rawValue)
-                        showingLanguageSheet = false
+                        viewModel.showingLanguageSheet = false
                     }
                     .padding()
+                    .disabled(viewModel.selectedLanguages.contains(language))
+                    .foregroundColor(viewModel.selectedLanguages.contains(language) ? Color(UIColor.systemGray2) : .primary)
                 }
             }
             .padding()
@@ -117,5 +100,5 @@ struct ContentView: View {
 
 
 //#Preview {
-//    ContentView(authVM: <#T##AuthViewModel#>, viewModel: <#T##arg#>, showingLanguageSheet: <#T##arg#>, availableLanguages: <#T##arg#>)
+//    FlashcardView(authVM: <#T##AuthViewModel#>, viewModel: <#T##arg#>, showingLanguageSheet: <#T##arg#>, availableLanguages: <#T##arg#>)
 //}
