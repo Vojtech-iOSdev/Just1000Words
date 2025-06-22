@@ -26,11 +26,23 @@ struct FlashcardView: View {
                 .pickerStyle(SegmentedPickerStyle())
                 .padding()
                 
-                if !viewModel.totalCardCount.words.isEmpty {
+                if !viewModel.totalCardCount.words.isEmpty && viewModel.practiceModeON == false {
                     Text("✅ Learned: \(viewModel.learnedCardCount) / \(viewModel.totalCardCount)")
                         .font(.headline)
                         .padding(.bottom, 10)
+                                 
+                    Text("⏳ learned today daily goal: \(viewModel.learnedTodayCount) / \(viewModel.dailyGoal)")
+                        .font(.headline)
+                        .padding(.bottom, 10)
                 }
+                
+                if viewModel.practiceModeON == true {
+                    Text("Practice mode is ON!")
+                        .font(.headline)
+                        .padding(.bottom, 10)
+                }
+
+                Spacer()
                 
                 if let currentCard = viewModel.currentCard {
                     Text(currentCard.word)
@@ -39,17 +51,25 @@ struct FlashcardView: View {
                 }
                 
                 if viewModel.flashcards.isEmpty {
-                    Text("DECK COMPLETED")
+                    Text("DECK COMPLETED 🎉")
                         .font(.largeTitle)
                         .padding()
+                    
+                    CustomButton1(title: "Wanna practice what you learned?", action: {
+                        viewModel.practiceLearnedCards()
+                    })
                 } else {
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 4), spacing: 12) {
                         ForEach(viewModel.answers) { answeredCard in
                             Button(action: {
-                                viewModel.checkAnswer(answeredCard)
+                                if viewModel.practiceModeON {
+                                    viewModel.checkAnswerForPractice(answeredCard)
+                                } else {
+                                    viewModel.checkAnswer(answeredCard)
+                                }
                             }) {
                                 Text(answeredCard.translation)
-                                    .frame(maxWidth: .infinity)
+                                    .frame(maxWidth: .infinity, minHeight: 50)
                                     .padding()
                                     .background(
                                         viewModel.selectedAnswer == answeredCard
@@ -74,8 +94,6 @@ struct FlashcardView: View {
             }
             
             CustomButton1(title: "Logout", action: authVM.logout)
-            
-            Spacer()
         }
         .onAppear {
             viewModel.getCurrentUser()
@@ -83,6 +101,7 @@ struct FlashcardView: View {
         }
         .onChange(of: viewModel.selectedLanguage) { language in
             viewModel.loadDeck(for: language.rawValue)
+            viewModel.practiceModeON = false
             viewModel.correctCount = 0
             viewModel.incorrectCount = 0
         }

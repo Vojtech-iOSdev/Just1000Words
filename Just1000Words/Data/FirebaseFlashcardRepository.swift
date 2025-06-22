@@ -48,7 +48,7 @@ import FirebaseFirestore
 import FirebaseAuth
 
 class FirebaseFlashcardRepository: ObservableObject {
-    private let db = Firestore.firestore()
+    let db = Firestore.firestore()
     private let auth = Auth.auth()
 
     func fetchDeck(for language: String, completion: @escaping ([Flashcard]) -> Void) {
