@@ -26,6 +26,12 @@ struct FlashcardView: View {
                 .pickerStyle(SegmentedPickerStyle())
                 .padding()
                 
+                if !viewModel.totalCardCount.words.isEmpty {
+                    Text("✅ Learned: \(viewModel.learnedCardCount) / \(viewModel.totalCardCount)")
+                        .font(.headline)
+                        .padding(.bottom, 10)
+                }
+                
                 if let currentCard = viewModel.currentCard {
                     Text(currentCard.word)
                         .font(.largeTitle)
